@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriScan - Tracker Nutricional</title>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1>🍎 NutriScan</h1>
+      <div class="date-display" id="current-date-display"></div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+      <button class="nav-btn active" data-section="meals">Comidas</button>
+      <button class="nav-btn" data-section="scan">Escanear</button>
+      <button class="nav-btn" data-section="goals">Objetivos</button>
+    </nav>
+
+    <!-- Meals Section -->
+    <section id="meals-section" class="app-section active">
+      <!-- Daily Summary -->
+      <div class="card">
+        <h3>Resumen del día</h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <h4>Calorías</h4>
+            <div id="summary-energy"></div>
+          </div>
+          <div class="summary-item">
+            <h4>Proteína</h4>
+            <div id="summary-protein"></div>
+          </div>
+          <div class="summary-item">
+            <h4>Grasa</h4>
+            <div id="summary-fat"></div>
+          </div>
+          <div class="summary-item">
+            <h4>Carbohidratos</h4>
+            <div id="summary-carbs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meals List -->
+      <div class="card">
+        <div class="meal-header">
+          <h3>Mis Comidas</h3>
+          <button class="btn btn-primary" id="create-meal-btn">+ Nueva</button>
+        </div>
+        <div id="meal-list"></div>
+      </div>
+    </section>
+
+    <!-- Scan Section -->
+    <section id="scan-section" class="app-section">
+      <div class="card">
+        <h3>Escanear Etiqueta</h3>
+        <p style="margin-bottom: 15px; color: #666;">Toma una foto del cuadro nutricional del producto</p>
+        
+        <div class="scan-area" id="scan-area">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 15.2l-3.2 3.2-3.2-3.2L4 12l3.2-3.2L10.4 12 12 13.6 13.6 12l3.2-3.2L20 12l-3.2 3.2z"/>
+            <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+          </svg>
+          <p>Haz clic para tomar una foto</p>
+          <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
+        </div>
+
+        <div id="scan-loading" class="loading" style="display: none;">
+          Procesando imagen...
+        </div>
+
+        <div id="scan-result" style="display: none;"></div>
+
+        <button class="btn btn-secondary btn-full" id="scan-label-btn" style="margin-top: 15px;">
+          Escanear etiqueta
+        </button>
+      </div>
+    </section>
+
+    <!-- Goals Section -->
+    <section id="goals-section" class="app-section">
+      <div class="card">
+        <h3>Objetivos Diarios</h3>
+        <p style="margin-bottom: 15px; color: #666;">Configura tus objetivos nutricionales</p>
+        
+        <div class="form-group">
+          <label for="goal-calories">Calorías (kcal)</label>
+          <input type="number" id="goal-calories" value="2000">
+        </div>
+        
+        <div class="form-group">
+          <label for="goal-protein">Proteína (g)</label>
+          <input type="number" id="goal-protein" value="150">
+        </div>
+        
+        <div class="form-group">
+          <label for="goal-fat">Grasa (g)</label>
+          <input type="number" id="goal-fat" value="65">
+        </div>
+        
+        <div class="form-group">
+          <label for="goal-carbs">Carbohidratos (g)</label>
+          <input type="number" id="goal-carbs" value="250">
+        </div>
+        
+        <button class="btn btn-primary btn-full" id="save-goals-btn">
+          Guardar objetivos
+        </button>
+      </div>
+    </section>
+
+    <!-- Add Food Modal -->
+    <div class="modal" id="add-food-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Agregar Alimento</h3>
+          <button class="close-btn" onclick="app.hideAddFoodModal()">×</button>
+        </div>
+        <div class="form-group">
+          <label for="food-name">Nombre del alimento</label>
+          <input type="text" id="food-name" placeholder="Ej: Pollo a la plancha">
+        </div>
+        <div class="form-group">
+          <label for="food-weight">Peso (g)</label>
+          <input type="number" id="food-weight" placeholder="Ej: 200">
+        </div>
+        <div class="form-group">
+          <label for="food-calories">Calorías</label>
+          <input type="number" id="food-calories" placeholder="Ej: 300">
+        </div>
+        <div class="form-group">
+          <label for="food-protein">Proteína (g)</label>
+          <input type="number" id="food-protein" placeholder="Ej: 40">
+        </div>
+        <div class="form-group">
+          <label for="food-fat">Grasa (g)</label>
+          <input type="number" id="food-fat" placeholder="Ej: 10">
+        </div>
+        <div class="form-group">
+          <label for="food-carbs">Carbohidratos (g)</label>
+          <input type="number" id="food-carbs" placeholder="Ej: 5">
+        </div>
+        <button class="btn btn-primary btn-full" id="add-food-submit">
+          Agregar
+        </button>
+      </div>
+    </div>
+
+    <!-- Scan Modal -->
+    <div class="modal" id="scan-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Escanear Etiqueta</h3>
+          <button class="close-btn" onclick="app.hideScanModal()">×</button>
+        </div>
+        <div class="scan-area" id="scan-modal-area">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 15.2l-3.2 3.2-3.2-3.2L4 12l3.2-3.2L10.4 12 12 13.6 13.6 12l3.2-3.2L20 12l-3.2 3.2z"/>
+            <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+          </svg>
+          <p>Haz clic para tomar una foto</p>
+          <input type="file" id="modal-camera-input" accept="image/*" capture="environment" style="display: none;">
+        </div>
+        <div id="modal-scan-loading" class="loading" style="display: none;">
+          Procesando imagen...
+        </div>
+        <div id="modal-scan-result" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Manual Food Modal -->
+    <div class="modal" id="manual-food-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Agregar Alimento Manual</h3>
+          <button class="close-btn" onclick="app.hideManualFoodModal()">×</button>
+        </div>
+        <div class="form-group">
+          <label for="manual-food-name">Nombre</label>
+          <input type="text" id="manual-food-name" placeholder="Ej: Arroz cocido">
+        </div>
+        <div class="form-group">
+          <label for="manual-food-weight">Peso (g)</label>
+          <input type="number" id="manual-food-weight" placeholder="Ej: 150">
+        </div>
+        <div class="form-group">
+          <label for="manual-food-calories">Calorías</label>
+          <input type="number" id="manual-food-calories" placeholder="Ej: 195">
+        </div>
+        <div class="form-group">
+          <label for="manual-food-protein">Proteína (g)</label>
+          <input type="number" id="manual-food-protein" placeholder="Ej: 4">
+        </div>
+        <div class="form-group">
+          <label for="manual-food-fat">Grasa (g)</label>
+          <input type="number" id="manual-food-fat" placeholder="Ej: 0.4">
+        </div>
+        <div class="form-group">
+          <label for="manual-food-carbs">Carbohidratos (g)</label>
+          <input type="number" id="manual-food-carbs" placeholder="Ej: 44">
+        </div>
+        <button class="btn btn-primary btn-full" id="manual-food-submit">
+          Agregar
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
