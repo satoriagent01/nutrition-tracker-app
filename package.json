@@ -1,0 +1,13 @@
+{
+  "name": "nutrition-tracker",
+  "version": "1.0.0",
+  "description": "Free nutrition tracker with OCR for food labels, meal planning, and custom macro tracking",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test src/**/*.test.js"
+  },
+  "dependencies": {
+    "tesseract.js": "^5.1.1"
+  }
+}
